@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package kvstore;
 
-service KeyValueStore {
+service KeyValueStore { // Phase 2: Definition of the system's public API
   rpc put(put_request) returns (put_response);
   rpc get(get_request) returns (get_response);
   rpc del(del_request) returns (del_response);
