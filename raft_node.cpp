@@ -1,3 +1,4 @@
+/* Phase 5: Implementation of Raft voting, heartbeats, and log replication */
 #include "raft_node.h"
 #include <random>
 #include <iostream>
