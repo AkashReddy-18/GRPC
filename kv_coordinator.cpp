@@ -21,7 +21,7 @@ using kvstore::get_response;
 using kvstore::del_request;
 using kvstore::del_response;
 
-class CoordinatorImpl final : public KeyValueStore::Service {
+class CoordinatorImpl final : public KeyValueStore::Service { // Phase 4: Proxy service for request routing and distribution
 public:
     CoordinatorImpl(const std::vector<std::string>& shard_addresses) {
         for (const auto& addr : shard_addresses) {
