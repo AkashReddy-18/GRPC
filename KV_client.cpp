@@ -51,6 +51,7 @@ public:
             if (response.found()) {
                 std::cout << "GET value: " << response.value() << std::endl;
             } else if (!response.leader_hint().empty()) {
+                // Phase 5: Report leader location for client redirection
                 std::cout << "GET failed. Leader hint: " << response.leader_hint() << std::endl;
             } else {
                 std::cout << "GET: Key not found" << std::endl;
