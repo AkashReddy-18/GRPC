@@ -1,4 +1,5 @@
 #pragma once
+/* Phase 5: Implementation of the Raft Consensus State Machine */
 #include <vector>
 #include <string>
 #include <mutex>
