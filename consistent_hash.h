@@ -6,7 +6,7 @@
 #include<stdexcept>
 #include <cstdint>
 
-class consistent_hash
+class consistent_hash // Phase 4: Data structure for horizontal scaling and sharding
 {
 public:
     explicit consistent_hash(int num_vnodes=100): vnodes(num_vnodes){}
