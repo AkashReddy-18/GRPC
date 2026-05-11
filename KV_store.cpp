@@ -4,7 +4,7 @@
 void kv_store::put(const std::string &key, const std::string &val)
 {
     std::unique_lock<std::shared_mutex> lock(rw_lock);
-    store_[key] = val;
+    store_[key] = val; // Phase 1: Basic storage logic
 }
 
 std::optional<std::string> kv_store::get(const std::string& key) const
