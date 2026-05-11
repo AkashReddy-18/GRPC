@@ -16,7 +16,7 @@ using kvstore::get_response;
 using kvstore::del_request;
 using kvstore::del_response;
 
-class KVClient {
+class KVClient { // Phase 2: CLI Client for interacting with the gRPC service
 public:
     KVClient(std::shared_ptr<Channel> channel)
         : stub_(KeyValueStore::NewStub(channel)) {}
