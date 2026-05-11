@@ -17,5 +17,5 @@ public:
 private:
     std::unordered_map<std::string, std::string> store_; // Phase 1: Underlying in-memory storage
 
-    mutable std::shared_mutex rw_lock; // read and write lock
+    mutable std::shared_mutex rw_lock; // Phase 3: Readers-Writer lock for thread safety
 };
