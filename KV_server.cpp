@@ -25,7 +25,7 @@ using kvstore::vote_response;
 using kvstore::append_request;
 using kvstore::append_response;
 
-class KeyValueStoreImpl final : public KeyValueStore::Service {
+class KeyValueStoreImpl final : public KeyValueStore::Service { // Phase 2: Implementation of the gRPC service contract
 public:
     explicit KeyValueStoreImpl(const std::string& self_id, const std::vector<std::string>& peers) 
         : store_(std::make_shared<kv_store>()) {
