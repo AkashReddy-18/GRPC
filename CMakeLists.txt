@@ -18,7 +18,7 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-# 2. gRPC and Protobuf
+# 2. gRPC and Protobuf (Phase 2: Communication framework)
 find_package(Protobuf REQUIRED)
 find_package(gRPC REQUIRED)
 
