@@ -3,7 +3,7 @@
 
 void kv_store::put(const std::string &key, const std::string &val)
 {
-    std::unique_lock<std::shared_mutex> lock(rw_lock);
+    std::unique_lock<std::shared_mutex> lock(rw_lock); // Phase 3: Exclusive write lock
     store_[key] = val; // Phase 1: Basic storage logic
 }
 
