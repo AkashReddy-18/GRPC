@@ -127,7 +127,7 @@ void RunServer(const std::string& self_id, const std::vector<std::string>& peers
 }
 
 int main(int argc, char** argv) {
-    if (argc < 2) {
+    if (argc < 2) { // Phase 4: Support for multi-node configuration (ID and peer list)
         std::cerr << "Usage: " << argv[0] << " self_id [peer_id1 peer_id2 ...]" << std::endl;
         return 1;
     }
