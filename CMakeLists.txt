@@ -63,7 +63,7 @@ add_library(kv_store_lib KV_store.cpp KV_store.h raft_node.cpp raft_node.h)
 target_include_directories(kv_store_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(kv_store_lib PUBLIC Threads::Threads kv_grpc_proto_lib)
 
-# Server Executable
+# Server Executable (Phase 2 basic, Phase 5 Raft integration)
 add_executable(kv_server KV_server.cpp)
 target_link_libraries(kv_server kv_store_lib kv_grpc_proto_lib)
 
