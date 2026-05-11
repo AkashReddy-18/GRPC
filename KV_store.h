@@ -15,7 +15,7 @@ public:
 
     bool del(const std::string &key);//del short for delete
 private:
-    std::unordered_map<std::string, std::string> store_;
+    std::unordered_map<std::string, std::string> store_; // Phase 1: Underlying in-memory storage
 
-    mutable std::shared_mutex rw_lock;//read and write lock
+    mutable std::shared_mutex rw_lock; // read and write lock
 };
