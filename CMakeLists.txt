@@ -114,6 +114,6 @@ add_custom_target(distclean
     COMMENT "Wiping all build-generated files..."
 )
 
-# Coordinator Executable
+# Coordinator Executable (Phase 4: Distribution proxy)
 add_executable(kv_coordinator kv_coordinator.cpp)
 target_link_libraries(kv_coordinator kv_grpc_proto_lib)
