@@ -7,7 +7,7 @@ service KeyValueStore { // Phase 2: Definition of the system's public API
   rpc get(get_request) returns (get_response);
   rpc del(del_request) returns (del_response);
 
-  // Raft Internal RPCs
+  // Phase 5: Internal consensus RPCs for log replication and voting
   rpc request_vote(vote_request) returns (vote_response);
   rpc append_entries(append_request) returns (append_response);
 }
