@@ -110,7 +110,7 @@ public:
 
 private:
     std::shared_ptr<kv_store> store_;
-    std::shared_ptr<RaftNode> raft_node_;
+    std::shared_ptr<RaftNode> raft_node_; // Phase 5: High availability via Raft consensus engine
 };
 
 void RunServer(const std::string& self_id, const std::vector<std::string>& peers) {
