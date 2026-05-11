@@ -1,0 +1,76 @@
+syntax = "proto3";
+
+package kvstore;
+
+service KeyValueStore {
+  rpc put(put_request) returns (put_response);
+  rpc get(get_request) returns (get_response);
+  rpc del(del_request) returns (del_response);
+
+  // Raft Internal RPCs
+  rpc request_vote(vote_request) returns (vote_response);
+  rpc append_entries(append_request) returns (append_response);
+}
+
+message log_entry {
+  uint64 term = 1;
+  string key = 2;
+  bytes value = 3;
+  enum type { PUT = 0; DELETE = 1; }
+  type op_type = 4;
+}
+
+message vote_request {
+  uint64 term = 1;
+  string candidate_id = 2;
+  int64 last_log_index = 3;
+  uint64 last_log_term = 4;
+}
+
+message vote_response {
+  uint64 term = 1;
+  bool vote_granted = 2;
+}
+
+message append_request {
+  uint64 term = 1;
+  string leader_id = 2;
+  int64 prev_log_index = 3;
+  uint64 prev_log_term = 4;
+  repeated log_entry entries = 5;
+  int64 leader_commit = 6;
+}
+
+message append_response {
+  uint64 term = 1;
+  bool success = 2;
+}
+
+message put_request {
+  string key = 1;
+  bytes value = 2;
+}
+
+message put_response {
+  bool success = 1;
+  string leader_hint = 2; // For redirection
+}
+
+message get_request {
+  string key = 1;
+}
+
+message get_response {
+  bytes value = 1;
+  bool found = 2;
+  string leader_hint = 3;
+}
+
+message del_request {
+  string key = 1;
+}
+
+message del_response {
+  bool success = 1;
+  string leader_hint = 2;
+}

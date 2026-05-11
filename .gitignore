@@ -1,0 +1,28 @@
+# Build artifacts
+build/
+bin/
+lib/
+
+# Generated Proto files (CMake handles this)
+gens/
+*.pb.cc
+*.pb.h
+
+# Logs
+*.log
+
+# Current documentation and plan files
+p2.md
+p3.md
+p4.md
+p5.md
+plan.txt
+docs/
+
+# IDE settings
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
