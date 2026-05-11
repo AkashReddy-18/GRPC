@@ -22,7 +22,7 @@ FetchContent_MakeAvailable(googletest)
 find_package(Protobuf REQUIRED)
 find_package(gRPC REQUIRED)
 
-# 3. Threads
+# 3. Threads (Phase 3: For concurrency stress tests)
 find_package(Threads REQUIRED)
 
 # --- Code Generation ---
