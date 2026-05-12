@@ -21,6 +21,9 @@ using kvstore::get_response;
 using kvstore::del_request;
 using kvstore::del_response;
 
+#include <thread>
+#include <chrono>
+
 class CoordinatorImpl final : public KeyValueStore::Service { // Phase 4: Proxy service for request routing and distribution
 public:
     CoordinatorImpl(const std::vector<std::string>& shard_addresses) {
@@ -31,22 +34,44 @@ public:
         }
     }
 
+    template <typename Func>
+    Status retry_rpc(Func rpc_call) {
+        int max_retries = 3;
+        int backoff_ms = 100;
+        
+        for (int i = 0; i < max_retries; ++i) {
+            Status status = rpc_call();
+            if (status.ok() || status.error_code() != grpc::StatusCode::UNAVAILABLE) {
+                return status;
+            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(backoff_ms));
+            backoff_ms *= 2;
+        }
+        return Status(grpc::StatusCode::UNAVAILABLE, "Target shard unresponsive after retries");
+    }
+
     Status put(ServerContext* context, const put_request* request, put_response* response) override {
         std::string target_shard = hash_ring_.get_server(request->key());
-        grpc::ClientContext client_context;
-        return stubs_.at(target_shard)->put(&client_context, *request, response);
+        return retry_rpc([&]() {
+            grpc::ClientContext client_context;
+            return stubs_.at(target_shard)->put(&client_context, *request, response);
+        });
     }
 
     Status get(ServerContext* context, const get_request* request, get_response* response) override {
         std::string target_shard = hash_ring_.get_server(request->key());
-        grpc::ClientContext client_context;
-        return stubs_.at(target_shard)->get(&client_context, *request, response);
+        return retry_rpc([&]() {
+            grpc::ClientContext client_context;
+            return stubs_.at(target_shard)->get(&client_context, *request, response);
+        });
     }
 
     Status del(ServerContext* context, const del_request* request, del_response* response) override {
         std::string target_shard = hash_ring_.get_server(request->key());
-        grpc::ClientContext client_context;
-        return stubs_.at(target_shard)->del(&client_context, *request, response);
+        return retry_rpc([&]() {
+            grpc::ClientContext client_context;
+            return stubs_.at(target_shard)->del(&client_context, *request, response);
+        });
     }
 
 private:
