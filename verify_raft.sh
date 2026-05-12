@@ -22,7 +22,7 @@ sleep 5
 
 echo "Finding leader..."
 # Try node1
-HINT=$($BIN_CLIENT localhost:50051 put test_key test_val | grep "Leader hint" | awk '{print $4}' || true)
+HINT=$($BIN_CLIENT localhost:50051 put test_key test_val | grep "Leader hint" | awk '{print $5}' || true)
 if [ -z "$HINT" ]; then
     LEADER="localhost:50051"
 else
@@ -50,10 +50,10 @@ echo "Waiting for NEW leader election (7 seconds)..."
 sleep 7
 
 # Find new leader
-HINT=$($BIN_CLIENT localhost:50051 get name | grep "Leader hint" | awk '{print $4}' || true)
+HINT=$($BIN_CLIENT localhost:50051 get name | grep "Leader hint" | awk '{print $5}' || true)
 # If 50051 was the one killed, try another
 if [ -z "$HINT" ]; then
-    HINT=$($BIN_CLIENT localhost:50053 get name | grep "Leader hint" | awk '{print $4}' || true)
+    HINT=$($BIN_CLIENT localhost:50053 get name | grep "Leader hint" | awk '{print $5}' || true)
 fi
 
 NEW_LEADER=$HINT
