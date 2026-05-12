@@ -39,6 +39,8 @@ public:
     }
 
 private:
+    void persist();
+    void read_persist();
     void run_loop(); // Background thread for timers
     void reset_election_timeout();
     void start_election();
@@ -71,5 +73,6 @@ private:
     std::thread background_thread_;
     bool running_ = true;
     ApplyCallback apply_callback_;
+    std::string storage_path_;
     std::unordered_map<std::string, std::unique_ptr<kvstore::KeyValueStore::Stub>> stubs_;
 };

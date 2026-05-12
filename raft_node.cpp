@@ -1,20 +1,74 @@
 /* Phase 5: Implementation of Raft voting, heartbeats, and log replication */
 #include "raft_node.h"
 #include <random>
+#include <fstream>
 #include <iostream>
+
+void RaftNode::persist() {
+    std::ofstream out(storage_path_, std::ios::binary);
+    if (out.is_open()) {
+        out.write(reinterpret_cast<const char*>(&current_term_), sizeof(current_term_));
+        
+        size_t voted_for_len = voted_for_.length();
+        out.write(reinterpret_cast<const char*>(&voted_for_len), sizeof(voted_for_len));
+        out.write(voted_for_.c_str(), voted_for_len);
+
+        size_t log_size = log_.size();
+        out.write(reinterpret_cast<const char*>(&log_size), sizeof(log_size));
+        for (const auto& entry : log_) {
+            std::string serialized;
+            entry.SerializeToString(&serialized);
+            size_t entry_len = serialized.length();
+            out.write(reinterpret_cast<const char*>(&entry_len), sizeof(entry_len));
+            out.write(serialized.c_str(), entry_len);
+        }
+    }
+}
+
+void RaftNode::read_persist() {
+    std::ifstream in(storage_path_, std::ios::binary);
+    if (in.is_open()) {
+        in.read(reinterpret_cast<char*>(&current_term_), sizeof(current_term_));
+        
+        size_t voted_for_len;
+        in.read(reinterpret_cast<char*>(&voted_for_len), sizeof(voted_for_len));
+        voted_for_.resize(voted_for_len);
+        in.read(&voted_for_[0], voted_for_len);
+
+        size_t log_size;
+        in.read(reinterpret_cast<char*>(&log_size), sizeof(log_size));
+        log_.clear();
+        for (size_t i = 0; i < log_size; ++i) {
+            size_t entry_len;
+            in.read(reinterpret_cast<char*>(&entry_len), sizeof(entry_len));
+            std::string serialized(entry_len, '\0');
+            in.read(&serialized[0], entry_len);
+            kvstore::log_entry entry;
+            entry.ParseFromString(serialized);
+            log_.push_back(entry);
+        }
+    } else {
+        // First run, initialize with dummy entry
+        kvstore::log_entry dummy;
+        dummy.set_term(0);
+        log_.push_back(dummy);
+    }
+}
 
 RaftNode::RaftNode(const std::string& self_id, const std::vector<std::string>& peer_ids, ApplyCallback callback)
     : self_id_(self_id), peers_(peer_ids), apply_callback_(callback) {
     
+    // Create a unique storage path for this node to avoid conflicts on localhost
+    std::string safe_id = self_id;
+    std::replace(safe_id.begin(), safe_id.end(), ':', '_');
+    storage_path_ = "raft_state_" + safe_id + ".bin";
+
     for (const auto& peer_id : peer_ids) {
         auto channel = grpc::CreateChannel(peer_id, grpc::InsecureChannelCredentials());
         stubs_[peer_id] = kvstore::KeyValueStore::NewStub(channel);
     }
 
-    // Add a dummy entry to log index 0 to simplify matching indices with 1-based log logic
-    kvstore::log_entry dummy;
-    dummy.set_term(0);
-    log_.push_back(dummy);
+    read_persist();
 
     reset_election_timeout();
     last_heartbeat_received_ = std::chrono::steady_clock::now();
@@ -242,6 +296,7 @@ void RaftNode::start_election() {
                     self->current_term_ = response.term();
                     self->state_ = RaftState::FOLLOWER;
                     self->voted_for_ = "";
+                    self->persist();
                     self->commit_cv_.notify_all(); // Wake up any waiters
                     return;
                 }
